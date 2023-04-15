@@ -1,0 +1,146 @@
+#ONE WAY ANOVA
+# Installing the package
+install.packages("dplyr")
+ 
+# Loading the package
+library(dplyr)
+ 
+# Variance in mean within group and between group
+boxplot(mtcars$disp~factor(mtcars$gear),
+        xlab = "gear", ylab = "disp")
+ 
+# Step 1: Setup Null Hypothesis and Alternate Hypothesis
+# H0 = mu = mu01 = mu02(There is no difference
+# between average displacement for different gear)
+# H1 = Not all means are equal
+ 
+# Step 2: Calculate test statistics using aov function
+mtcars_aov <- aov(mtcars$disp~factor(mtcars$gear))
+summary(mtcars_aov)
+ 
+# Step 3: Calculate F-Critical Value
+# For 0.05 Significant value, critical value = alpha = 0.05
+ 
+# Step 4: Compare test statistics with F-Critical value
+# and conclude test p < alpha, Reject Null Hypothesis
+
+
+#TWO WAY ANOVA
+# Installing the package
+install.packages("dplyr")
+ 
+# Loading the package
+library(dplyr)
+ 
+# Variance in mean within group and between group
+boxplot(mtcars$disp~mtcars$gear, subset = (mtcars$am == 0),
+        xlab = "gear", ylab = "disp", main = "Automatic")
+boxplot(mtcars$disp~mtcars$gear, subset = (mtcars$am == 1),
+            xlab = "gear", ylab = "disp", main = "Manual")
+ 
+# Step 1: Setup Null Hypothesis and Alternate Hypothesis
+# H0 = mu0 = mu01 = mu02(There is no difference between
+# average displacement for different gear)
+# H1 = Not all means are equal
+ 
+# Step 2: Calculate test statistics using aov function
+mtcars_aov2 <- aov(mtcars$disp~factor(mtcars$gear) *
+                            factor(mtcars$am))
+summary(mtcars_aov2)
+
+
+#ONE WAY ANOVA HARD CODE
+# Calculate the group means
+means <- tapply(data$outcome, data$group, mean)
+
+# Calculate the overall mean
+overall_mean <- mean(data$outcome)
+
+# Calculate the sum of squares within (SSW)
+ssw <- sum((data$outcome - means[data$group])^2)
+
+# Calculate the total sum of squares (SST)
+sst <- sum((data$outcome - overall_mean)^2)
+
+# Calculate the sum of squares between (SSB)
+ssb <- sum((means - overall_mean)^2 * table(data$group))
+
+# Calculate the degrees of freedom
+df_within <- length(data$outcome) - length(means)
+df_between <- length(means) - 1
+df_total <- length(data$outcome) - 1
+
+# Calculate the mean square within (MSW)
+msw <- ssw / df_within
+
+# Calculate the mean square between (MSB)
+msb <- ssb / df_between
+
+# Calculate the F-statistic
+f_stat <- msb / msw
+
+# Calculate the p-value
+p_value <- pf(f_stat, df_between, df_within, lower.tail = FALSE)
+
+# Print the ANOVA results
+cat("F-statistic =", round(f_stat, 2), ", p-value =", format(p_value, scientific = TRUE, digits = 2), "\n")
+
+
+
+#TWO WAY ANOVA HARD CODE
+# Calculate the cell means
+means <- with(data, tapply(outcome, list(group1, group2), mean))
+
+# Calculate the overall mean
+overall_mean <- mean(data$outcome)
+
+# Calculate the sum of squares within (SSW)
+ssw <- sum((data$outcome - means[cbind(group1, group2)])^2)
+
+# Calculate the total sum of squares (SST)
+sst <- sum((data$outcome - overall_mean)^2)
+
+# Calculate the sum of squares for factor 1 (SS1)
+ss1 <- sum((colMeans(means) - overall_mean)^2 * table(data$group1, data$group2))
+
+# Calculate the sum of squares for factor 2 (SS2)
+ss2 <- sum((rowMeans(means) - overall_mean)^2 * table(data$group1, data$group2))
+
+# Calculate the sum of squares for the interaction (SSi)
+ssi <- sst - ssw - ss1 - ss2
+
+# Calculate the degrees of freedom
+df_within <- length(data$outcome) - length(unique(data$group1)) * length(unique(data$group2))
+df_1 <- length(unique(data$group1)) - 1
+df_2 <- length(unique(data$group2)) - 1
+df_interaction <- df_1 * df_2
+df_total <- length(data$outcome) - 1
+
+# Calculate the mean square within (MSW)
+msw <- ssw / df_within
+
+# Calculate the mean square for factor 1 (MS1)
+ms1 <- ss1 / df_1
+
+# Calculate the mean square for factor 2 (MS2)
+ms2 <- ss2 / df_2
+
+# Calculate the mean square for the interaction (MSi)
+msi <- ssi / df_interaction
+
+# Calculate the F-statistics
+f_stat_1 <- ms1 / msw
+f_stat_2 <- ms2 / msw
+f_stat_i <- msi / msw
+
+# Calculate the p-values
+p_value_1 <- pf(f_stat_1, df_1, df_within, lower.tail = FALSE)
+p_value_2 <- pf(f_stat_2, df_2, df_within, lower.tail = FALSE)
+p_value_i <- pf(f_stat_i, df_interaction, df_within, lower.tail = FALSE)
+
+# Print the ANOVA results
+cat("Factor 1: F-statistic =", round(f_stat_1, 2), ", p-value =", format(p_value_1, scientific = TRUE, digits = 2), "\n")
+cat("Factor 2: F-statistic =", round(f_stat_2, 2), ", p-value =", format(p_value_2, scientific = TRUE, digits = 2), "\n")
+cat("Interaction: F-statistic =", round(f_stat_i, 2), ", p-value =", format(p_value_i, scientific = TRUE, digits = 2), "\n")
+
+

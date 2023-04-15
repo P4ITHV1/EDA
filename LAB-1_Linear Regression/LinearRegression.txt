@@ -1,0 +1,40 @@
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(ggpubr)
+
+#LINEAR REGRESSION USING FUNCTION
+
+#simple linear regression
+income.happiness.lm <- lm(happiness ~ income, data = income.data)
+summary(income.happiness.lm)
+income.graph<-ggplot(income.data, aes(x=income, y=happiness)) + geom_point()
+income.graph <- income.graph + geom_smooth(method="lm", col="black")
+income.graph
+
+#multiple linear regression
+heart.disease.lm<-lm(heart.disease ~ biking + smoking, data = heart.data)
+summary(heart.disease.lm)
+plotting.data<-expand.grid(
+  biking = seq(min(heart.data$biking), max(heart.data$biking), length.out=30),
+    smoking=c(min(heart.data$smoking), mean(heart.data$smoking), max(heart.data$smoking)))
+plotting.data$predicted.y <- predict.lm(heart.disease.lm, newdata=plotting.data)
+plotting.data$smoking <- round(plotting.data$smoking, digits = 2)
+heart.plot <- ggplot(heart.data, aes(x=biking, y=heart.disease)) +
+  geom_point()
+heart.plot <- heart.plot +
+  geom_line(data=plotting.data, aes(x=biking, y=predicted.y, color=smoking), size=1.25)
+
+
+#LINEAR REGRESSION HARD CODE
+
+W1 = sum((Xi - mean(Xi))(Yi - mean(Yi)))/sum(Xi - mean(Xi))^2
+W0 = mean(y) - w1*mean(x)
+
+SSR = sum(Yi - mean(y))^2
+SSR = sum(pred(y) - mean(y))^2
+SSE = SST - SSR
+
+RSqr = SSR / SST
+
+RSS = sum(Yi - pred(Y))^2

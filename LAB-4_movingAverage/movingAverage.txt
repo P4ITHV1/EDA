@@ -1,0 +1,32 @@
+#moving average without using inbuilt functions
+# Define a function to calculate the SMA for a window of size k
+sma <- function(x, k) {
+  n <- length(x)
+  sma_values <- rep(NA, n)
+  for (i in k:n) {
+    sma_values[i] <- mean(x[(i-k+1):i])
+  }
+  sma_values
+}
+
+# Calculate the SMA for a window of size k
+sma_values <- sma(ts_data, k)
+
+
+#moving average
+sales <- c(5.2,4.9,5.5,4.9,5.2,5.7,5.4,5.8,5.9,6,5.2,4.8)
+moving_average <- rollmean(sales, 3, align = "right")
+print(moving_average)
+forecasting_errors <- sales - moving_average
+# Calculate the mean absolute error
+mae <- mean(abs(forecasting_errors))
+# Calculate the mean squared error
+mse <- mean(forecasting_errors^2)
+# Calculate the root mean squared error
+rmse <- sqrt(mse)
+# Calculate the mean absolute percentage error
+mape <- mean(abs(forecasting_errors/sales))*100
+print(mae)
+print(mse)
+print(rmse)
+print(mape)

@@ -1,0 +1,51 @@
+cor(x, y, method = "pearson")
+cor(x, y, method = "spearman")
+cor(x, y, method = "kendall")
+
+#hard coding
+
+Pearson
+R = ( n*sum(x*y) - sum(x)*sum(y) ) / ( sqrt(n*sum(x^2) - sum(x)^2) ) ( sqrt(n*sum(y^2) - sum(y)^2) )
+
+Spearman
+R = 1 - ( 6 * sum(d)^2 / n^3 - n )
+Where d is the ranking rank(x) or for descending order rank(-x)
+
+Kendall = c - d / c + d
+
+
+#autocorrelation
+
+# load tseries module
+library(tseries)
+  
+# create vector1 with 8 time periods
+vector1=c(34,56,23,45,21,64,78,90)
+  
+# calculate auto correlation with no lag
+print(acf(vector1,pl=TRUE))
+  
+# calculate auto correlation with lag 0
+print(acf(vector1,lag=0,pl=TRUE))
+  
+# calculate auto correlation with lag 2
+print(acf(vector1,lag=2,pl=TRUE))
+  
+# calculate auto correlation with lag 6
+print(acf(vector1,lag=6,pl=TRUE))
+
+#autocorrelation without using inbuilt functions in 
+# Calculate the mean
+ts_mean <- mean(ts_data)
+
+# Calculate the autocovariance function
+n <- length(ts_data)
+acf_values <- sapply(0:(n-1), function(h) {
+  sum((ts_data[1:(n-h)] - ts_mean) * (ts_data[(h+1):n] - ts_mean)) / (n - 1)
+})
+
+# Calculate the autocorrelation function
+acf_values / acf_values[1]
+
+
+ 
